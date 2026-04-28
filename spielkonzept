@@ -1,2 +1,31 @@
 pokemon spiel pvp. 
+anfang auswahlmenü für jeden spieler. 
+man wählt 1 pokemon aus.
+danach kampf.
+pokemon hat 3 attacken die alle unterschiedlich viel energie kosten.
+maximal 10 energie.
+jeden zug 2 energie +. 
+angriff 2 energie.
+block 1 energie.
+special move - variabel. 
+5% chance auf miss.
+pokemontyp(schere stein papier mit 4 richtungen).
+angriff basisschaden 60(schnick schnack schnuck(x1.25, x0.75))
+block minispiel
+20 neopixel. 
+letzten 5 einer grün.
+roter punkt geht nach unten. man muss treffen.
+basis block 
+0 tile away =20% schadensminderung
+1 tile away =10% schadensminderung
+alles andere nix
+wenn block move
+0 tile away =60%
+1 tile away =30%
+alles andere 20%
 
+lebensleiste 6 neopixel untereinander. 
+max 600hp
+bei 470 hp - 4 grün von unten. der 5. so hellorange statt grün.
+
+in "ui" oben noch eigene leben und gegner leben.

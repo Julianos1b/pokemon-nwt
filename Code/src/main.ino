@@ -13,8 +13,6 @@ int spielerHP = 100;
 void setup() {
   Serial.begin(9600);
 
-  spielerHP -= shiggy.damage;
-
   Serial.println(spielerHP);
 }
 

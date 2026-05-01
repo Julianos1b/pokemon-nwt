@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 87, "left": -67.8, "attrs": {} },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd2",
+      "top": 352,
+      "left": -359.2,
+      "attrs": { "pins": "i2c", "i2c-address": "0x3F" }
+    },
+    {
+      "type": "wokwi-analog-joystick",
+      "id": "joystick1",
+      "top": 341.4,
+      "left": -31.6,
+      "rotate": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 489.5,
+      "left": 61.1,
+      "rotate": 90,
+      "attrs": { "color": "green", "xray": "1" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn2",
+      "top": 489.5,
+      "left": -6.1,
+      "rotate": 90,
+      "attrs": { "color": "green", "xray": "1" }
+    },
+    {
+      "type": "wokwi-analog-joystick",
+      "id": "joystick2",
+      "top": 341.4,
+      "left": 122,
+      "rotate": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": 342.4,
+      "left": 274.4,
+      "attrs": { "pins": "i2c" }
+    }
+  ],
+  "connections": [
+    [ "lcd2:GND", "uno:GND.1", "black", [ "h0" ] ],
+    [ "joystick1:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "joystick1:GND", "uno:GND.1", "black", [ "v0" ] ],
+    [ "joystick1:HORZ", "uno:A0", "green", [ "v0" ] ],
+    [ "joystick1:VERT", "uno:A1", "green", [ "v0" ] ],
+    [ "lcd2:VCC", "uno:5V", "red", [ "h0" ] ],
+    [ "lcd2:SDA", "uno:A4", "green", [ "h0" ] ],
+    [ "joystick2:GND", "uno:GND.1", "black", [ "v0" ] ],
+    [ "joystick2:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "joystick2:HORZ", "uno:A2", "green", [ "v0" ] ],
+    [ "joystick2:VERT", "uno:A3", "green", [ "v0" ] ],
+    [ "lcd1:GND", "uno:GND.1", "black", [ "h-220.8", "v-297.6" ] ],
+    [ "lcd1:VCC", "uno:5V", "red", [ "h0" ] ],
+    [ "lcd1:SDA", "uno:A4", "green", [ "h0" ] ],
+    [ "lcd1:SCL", "uno:A5", "green", [ "h0" ] ],
+    [ "lcd2:SCL", "uno:A5", "green", [ "h0" ] ],
+    [ "btn1:1", "uno:8", "green", [] ],
+    [ "btn1:2", "uno:GND.1", "black", [] ],
+    [ "btn2:r", "uno:9", "green", [] ],
+    [ "btn2:r", "uno:GND.1", "black", [] ],
+    [ "btn1:1.r", "uno:8", "green", [ "v0" ] ],
+    [ "btn1:2.l", "uno:GND.1", "green", [ "v0" ] ],
+    [ "btn2:2.l", "uno:GND.1", "green", [ "v0" ] ],
+    [ "btn2:1.l", "uno:12", "green", [ "v0" ] ],
+    [ "joystick2:SEL", "uno:7", "green", [ "v0" ] ],
+    [ "joystick1:SEL", "uno:10", "green", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

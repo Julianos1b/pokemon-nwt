@@ -244,30 +244,29 @@ void AuswahlBildschirm()
 }
 
 void WerteSetzen() {
-  for (int i = 1; i < 3; i++) {
-
+  for (int i = 0; i < 2; i++) {
     Serial.print("Healthpoints Player ");
-    Serial.print(i);
+    Serial.print(i+1);
     Serial.print(": ");
     Serial.println(Players[i].healthpoints);
 
     Serial.print("Damage Player ");
-    Serial.print(i);
+    Serial.print(i+1);
     Serial.print(": ");
     Serial.println(Players[i].damage);
 
     Serial.print("Name Player ");
-    Serial.print(i);
+    Serial.print(i+1);
     Serial.print(": ");
     Serial.println(Players[i].name);
 
     Serial.print("Ability Energy Cost Player ");
-    Serial.print(i);
+    Serial.print(i+1);
     Serial.print(": ");
     Serial.println(Players[i].ability_energy_cost);
 
     Serial.print("Type Player ");
-    Serial.print(i);
+    Serial.print(i+1);
     Serial.print(": ");
     Serial.println(Players[i].type);
   }

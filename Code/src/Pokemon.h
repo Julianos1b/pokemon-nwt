@@ -5,11 +5,11 @@ class Pokemon {
 public:
     int healthpoints;
     int damage;
-    String name;
+    const char* name;
     int ability_energy_cost;
-    String type;
+    const char* type;
 
-    Pokemon(int d, String n, int a, String t, int hp) {
+    Pokemon(int d, const char* n, int a, const char* t, int hp) {
         healthpoints = hp;
         damage = d;
         name = n;

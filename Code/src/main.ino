@@ -37,29 +37,6 @@ Pokemon Players[2] = {
   Pokemon(0, "P2", "", 1, "", "", "", 0)
 };
 
-//Game Values
-
-enum MoveChoice { 
-  BLOCK, 
-  ATTACK, 
-  ULTIMATE, 
-  SKIP 
-};
-
-int currentPlayer = 0;
-int moveIndex = 0;
-
-MoveChoice moves[4] = {
-  BLOCK, 
-  ATTACK, 
-  ULTIMATE, 
-  SKIP
-};
-
-MoveChoice selectedMove = SKIP;
-
-bool moveChosen = false;
-
 enum Gamestates {
   START,
   AUSWAHLPROMPT,
@@ -69,8 +46,6 @@ enum Gamestates {
   ENDE,
 };
 
-const char* moveName(MoveChoice m);
-void applyMove(Pokemon &attacker, Pokemon &defender, MoveChoice move);
 
 // LCD Text Stuff
 const char* StartPromptText = "Druecke den Joystick um in den Auswahlbildschirm zu gelangen    ";
@@ -258,6 +233,7 @@ void AuswahlBildschirm()
   if (p1Done == true) {
     if(p2Done == true){
     Gamestate = WERTESETZEN;
+    PlayerAtTurn = 1;
 
     lcd1.clear();
     lcd2.clear();
@@ -308,109 +284,15 @@ void WerteSetzen() {
 
 void Game() {
 
-  Pokemon &p1 = Players[0];
-  Pokemon &p2 = Players[1];
-
-  int y;
-
-  if (currentPlayer == 0) {
-    y = analogRead(VRY1);
-
-    lcd1.setCursor(0, 0);
-    lcd1.print("P1 TURN        ");
-
-    lcd1.setCursor(0, 1);
-    lcd1.print(moveName(moves[moveIndex]));
-    lcd1.print("            ");
-
-  } else {
-    y = analogRead(VRY2);
-
-    lcd2.setCursor(0, 0);
-    lcd2.print("P2 TURN        ");
-
-    lcd2.setCursor(0, 1);
-    lcd2.print(moveName(moves[moveIndex]));
-    lcd2.print("            ");
+  if(PlayerAtTurn == 1) {
+    bool HasAttacked = false;
+    bool HasBlocked = false;
+    bool HasUlted = false;
   }
 
-  static bool movedUp = false;
-  static bool movedDown = false;
-
-  if (y > 700 && !movedDown) {
-    if (moveIndex < 3) moveIndex++;
-    movedDown = true;
-  }
-
-  if (y < 300 && !movedUp) {
-    if (moveIndex > 0) moveIndex--;
-    movedUp = true;
-  }
-
-  if (y > 400 && y < 600) {
-    movedUp = false;
-    movedDown = false;
-  }
-
-  if ((currentPlayer == 0 && digitalRead(SW1) == LOW) ||
-      (currentPlayer == 1 && digitalRead(SW2) == LOW)) {
-
-    selectedMove = moves[moveIndex];
-
-    if (currentPlayer == 0) {
-      applyMove(p1, p2, selectedMove);
-      currentPlayer = 1;
-    } else {
-      applyMove(p2, p1, selectedMove);
-      currentPlayer = 0;
-    }
-
-    moveIndex = 0;
-
-    delay(300);
-  }
-
-  if (p1.healthpoints <= 0) {
-    lcd1.clear();
-    lcd1.print("P2 WINS!");
-    Gamestate = ENDE;
-  }
-
-  if (p2.healthpoints <= 0) {
-    lcd1.clear();
-    lcd1.print("P1 WINS!");
-    Gamestate = ENDE;
-  }
-}
-const char* moveName(MoveChoice m) {
-  switch (m) {
-    case BLOCK: return "BLOCK";
-    case ATTACK: return "ATTACK";
-    case ULTIMATE: return "ULTIMATE";
-    case SKIP: return "SKIP";
-  }
-  return "";
-}
-
-void applyMove(Pokemon &attacker, Pokemon &defender, MoveChoice move) {
-
-  if (move == ATTACK) {
-    defender.healthpoints -= attacker.damage;
-  }
-
-  if (move == ULTIMATE) {
-    defender.healthpoints -= attacker.damage * 2;
-  }
-
-  if (move == BLOCK) {
-
-  }
-
-  if (move == SKIP) {
-
-  }
-
-  if (defender.healthpoints < 0) {
-    defender.healthpoints = 0;
+  if(PlayerAtTurn == 2) {
+    bool HasAttacked = false;
+    bool HasBlocked = false;
+    bool HasUlted = false;
   }
 }

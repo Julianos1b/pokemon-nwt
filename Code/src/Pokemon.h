@@ -2,6 +2,7 @@ class Pokemon {
 public:
     int healthpoints;
     int damage;
+    int energy;
     const char* attackname;
     const char* name;
     const char* ultimatename;
@@ -10,6 +11,7 @@ public:
     const char* type;
 
     Pokemon(int hp,
+            int en,
             const char* name,
             const char* type,
             int damage,
@@ -18,6 +20,7 @@ public:
             const char* ultimatetype,
             int energy)
     {
+        this->energy = en;
         this->healthpoints = hp;
         this->name = name;
         this->type = type;

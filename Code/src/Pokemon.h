@@ -1,21 +1,30 @@
-#ifndef POKEMON_H
-#define POKEMON_H
-
 class Pokemon {
 public:
     int healthpoints;
     int damage;
+    const char* attackname;
     const char* name;
+    const char* ultimatename;
+    const char* ultimatetype;
     int ability_energy_cost;
     const char* type;
 
-    Pokemon(int d, const char* n, int a, const char* t, int hp) {
-        healthpoints = hp;
-        damage = d;
-        name = n;
-        ability_energy_cost = a;
-        type = t;
+    Pokemon(int hp,
+            const char* name,
+            const char* type,
+            int damage,
+            const char* attackname,
+            const char* ultimatename,
+            const char* ultimatetype,
+            int energy)
+    {
+        this->healthpoints = hp;
+        this->name = name;
+        this->type = type;
+        this->damage = damage;
+        this->attackname = attackname;
+        this->ultimatename = ultimatename;
+        this->ultimatetype = ultimatetype;
+        this->ability_energy_cost = energy;
     }
 };
-
-#endif

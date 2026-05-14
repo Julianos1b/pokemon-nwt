@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include "Pokemon.h"
+#include "Moves.h"
 
 // Player 1
 bool p1Done = false;
@@ -32,6 +33,7 @@ Pokemon pokemons[PokemonArraySize] = {
 
 int PokemonSelectedIndex = 0;
 int PlayerAtTurn = 1;
+
 Pokemon Players[2] = {
   Pokemon(0, "P1", "", 1, "", "", "", 0),
   Pokemon(0, "P2", "", 1, "", "", "", 0)
@@ -282,17 +284,117 @@ void WerteSetzen() {
   Gamestate = SPIEL;
 }
 
-void Game() {
+void Game()
+{
+  static bool first = true;
+  static bool movedDown = false;
+  static bool movedUp = false;
 
-  if(PlayerAtTurn == 1) {
-    bool HasAttacked = false;
-    bool HasBlocked = false;
-    bool HasUlted = false;
+  if (PlayerAtTurn == 1)
+  {
+    int y = analogRead(VRY1);
+
+    if (first) {
+      lcd1.clear();
+      lcd1.setCursor(0, 0);
+      lcd1.print("Move: ");
+      lcd1.print(Players[PokemonSelectedIndex].name);
+
+      lcd1.setCursor(0, 1);
+      lcd1.print("Type:");
+      lcd1.print(pokemons[PokemonSelectedIndex].type);
+
+      first = false;
+    }
+
+    if (y > 700 && !movedDown) {
+      if (PokemonSelectedIndex < PokemonAmount) {
+        PokemonSelectedIndex++;
+        first = true;
+      }
+      movedDown = true;
+    }
+
+    if (y < 300 && !movedUp) {
+      if (PokemonSelectedIndex > 0) {
+        PokemonSelectedIndex--;
+        first = true;
+      }
+      movedUp = true;
+    }
+
+    if (y > 400 && y < 600) {
+      movedDown = false;
+      movedUp = false;
+    }
   }
 
-  if(PlayerAtTurn == 2) {
-    bool HasAttacked = false;
-    bool HasBlocked = false;
-    bool HasUlted = false;
+  if (PlayerAtTurn == 2)
+  {
+    int y = analogRead(VRY2);
+
+    if (first) {
+      lcd2.clear();
+      lcd2.setCursor(0, 0);
+      lcd2.print("P2: ");
+      lcd2.print(pokemons[PokemonSelectedIndex].name);
+
+      lcd2.setCursor(0, 1);
+      lcd2.print("Type:");
+      lcd2.print(pokemons[PokemonSelectedIndex].type);
+
+      first = false;
+    }
+
+    if (y > 700 && !movedDown) {
+      if (PokemonSelectedIndex < PokemonAmount) {
+        PokemonSelectedIndex++;
+        first = true;
+      }
+      movedDown = true;
+    }
+
+    if (y < 300 && !movedUp) {
+      if (PokemonSelectedIndex > 0) {
+        PokemonSelectedIndex--;
+        first = true;
+      }
+      movedUp = true;
+    }
+
+    if (y > 400 && y < 600) {
+      movedDown = false;
+      movedUp = false;
+    }
+  }
+
+  if (digitalRead(SW1) == LOW && PlayerAtTurn == 1) {
+  Players[0] = pokemons[PokemonSelectedIndex];
+  PlayerAtTurn = 2;
+  PokemonSelectedIndex = 0;
+  p1Done = true;
+  first = true;
+  delay(300);
+  lcd1.clear();
+  }
+
+  if (digitalRead(SW2) == LOW && PlayerAtTurn == 2) {
+  Players[1] = pokemons[PokemonSelectedIndex];
+  p2Done = true;
+  delay(300);
+  lcd2.clear();
+  }
+
+  if (p1Done == true) {
+    if(p2Done == true){
+    Gamestate = WERTESETZEN;
+    PlayerAtTurn = 1;
+
+    lcd1.clear();
+    lcd2.clear();
+
+    lcd1.print("READY!");
+    lcd2.print("READY!");
+    }
   }
 }

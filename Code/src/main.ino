@@ -31,26 +31,36 @@ bool p1Done = false;
 #define VRX1 A2
 #define VRY1 A3
 #define SW1 8
+double p1Advantage = 1.0;
+bool p1stunned = false;
+bool p1UltBlock = false;
 
 // Player 2
 bool p2Done = false;
 #define VRX2 A0
 #define VRY2 A1
 #define SW2 12
+double p2Advantage = 1.0;
+bool p2stunned = false;
+bool p2UltBlock = false;
 
 bool P1HasBlocked = false;
 bool P1HasAttacked = false;
 bool P1HasUlted = false;
+bool SW1Pressed = false;
 
 bool P2HasBlocked = false;
 bool P2HasAttacked = false;
 bool P2HasUlted = false;
+bool SW2Pressed = false;
+
+double blockmove = 0.0;
 
 LiquidCrystal_I2C lcd1(0x27, 16, 2);
 LiquidCrystal_I2C lcd2(0x26, 16, 2);
 
 // Pokemon
-const int PokemonAmount = 4;
+const int PokemonAmount = 5;
 const int PokemonArraySize = PokemonAmount + 1;
 
 Pokemon pokemons[PokemonArraySize] = {
@@ -58,7 +68,8 @@ Pokemon pokemons[PokemonArraySize] = {
     Pokemon(600, 60, 10, "Burn", "Glumanda", "FireStorm", 4, "fire"),
     Pokemon(600, 60, 10, "Sting", "Bisasam", "Heal", 3, "grass"),
     Pokemon(600, 60, 10, "Shock", "Pikachu", "MegaShock", 4, "electric"),
-    Pokemon(600, 60, 10, "Punch", "Evoli", "Heal", 5, "grass")
+    Pokemon(600, 60, 10, "Punch", "Evoli", "Heal", 5, "grass"),
+    Pokemon(600, 500, 10, "KILL", "Admin", "KILL", 1, "Admin")
 };
 
 int PokemonSelectedIndex = 0;
@@ -69,6 +80,8 @@ Pokemon Players[2] = {
   Pokemon(0, 0, 0, "", "P1", "", 0, ""),
   Pokemon(0, 0, 0, "", "P2", "", 0, ""),
 };
+
+int ultimates[2] = {1,2};
 
 enum Gamestates {
   START,
@@ -131,6 +144,12 @@ void loop() {
   }
   if (Gamestate == SPIEL) {
     Game();
+  }
+  if (Gamestate == ENDE) {
+    lcd1.clear();
+    lcd2.clear();
+    lcd1.print("ENDE");
+    lcd2.print("ENDE");
   }
 }
 
@@ -315,17 +334,46 @@ void WerteSetzen() {
     Serial.println("================================");
   }
 
+  SetRelations();
+  SetUltType();
   Gamestate = SPIEL;
 }
 
 void Game()
 {
+  for(int i = 0; i < 2; i++) {
+    if(Players[i].healthpoints <= 0)
+    {
+      Gamestate = ENDE;
+    }
+  }
+
   static bool first = true;
   static bool movedDown = false;
   static bool movedUp = false;
 
   if (PlayerAtTurn == 1)
   {
+      if(p1stunned == true) {
+      lcd1.clear();
+      lcd1.print("du bist");
+      lcd1.setCursor(0, 1);
+      lcd1.print("geschockt !");
+      strip1.clear();
+      strip2.clear();
+      strip1.show();
+      strip2.show();
+      lcd2.clear();
+      lcd2.print("du bist dran");
+      PlayerAtTurn = 2;
+      Players[0].energy += 2;
+      MoveIndex = 1;
+      first = true;
+      delay(800);
+      lcd1.clear();
+      lcd1.print("P1 ist dran !");
+      p1stunned = false;
+    }
     int y = analogRead(VRY1);
 
     if (first) {
@@ -342,6 +390,9 @@ void Game()
         break;
         case 3:
         lcd1.print("Ult");
+        lcd1.setCursor(0, 1);
+        lcd1.print("kosten : ");
+        lcd1.print(Players[0].ability_energy_cost);
         NeopixelIndex(MoveIndex);
         break;
         case 4:
@@ -403,7 +454,26 @@ void Game()
 
   if (PlayerAtTurn == 2)
   {
-
+    if(p2stunned == true) {
+      lcd2.clear();
+      lcd2.print("du bist");
+      lcd2.setCursor(0, 1);
+      lcd2.print("geschockt !");
+      strip1.clear();
+      strip2.clear();
+      strip1.show();
+      strip2.show();
+      lcd1.clear();
+      lcd1.print("du bist dran");
+      PlayerAtTurn = 1;
+      Players[1].energy += 2;
+      MoveIndex = 1;
+      first = true;
+      delay(800);
+      lcd2.clear();
+      lcd2.print("P1 ist dran !");
+      p2stunned = false;
+    }
     int y = analogRead(VRY2);
 
     if (first) {
@@ -420,6 +490,9 @@ void Game()
         break;
         case 3:
         lcd2.print("Ult");
+        lcd2.setCursor(0, 1);
+        lcd2.print("kosten : ");
+        lcd2.print(Players[1].ability_energy_cost);
         NeopixelIndex(MoveIndex);
         break;
         case 4:
@@ -480,16 +553,29 @@ void Game()
     }
   }
 
+  if (digitalRead(SW1) == HIGH && PlayerAtTurn == 1){
+    SW1Pressed = false;
+    delay(50);
+  }
+
   if (digitalRead(SW1) == LOW && PlayerAtTurn == 1) {
+    if(SW1Pressed == false) {
+    SW1Pressed = true;
     switch(MoveIndex) {
       case 1:
       if(P1HasBlocked == false){
       if(Players[0].energy >= 1) {
+      blockmove = 0.2;
       lcd2.clear();
       lcd2.print("P1 blockt");
         Players[0].energy -= 1;
       P1HasBlocked = true;
+      lcd1.clear();
+      lcd1.print("Du Blockst");
       }
+      } else {
+        lcd1.clear();
+        lcd1.print("Fehlgeschlagen");
       }
       break;
       case 2:
@@ -500,7 +586,13 @@ void Game()
       lcd2.print("P1 attackiert");
       Players[0].energy -= 2;
       P1HasAttacked = true;
+      lcd1.clear();
+      lcd1.print("Angriff !");
+      BlockingGame();
       }
+      } else {
+        lcd1.clear();
+        lcd1.print("Fehlgeschlagen");
       }
       break;
       case 3:
@@ -508,10 +600,15 @@ void Game()
       {
       if(Players[0].energy >= Players[0].ability_energy_cost) {
       lcd2.clear();
-      lcd2.print("P1 ulted");
       Players[0].energy -= Players[0].ability_energy_cost;
+      lcd1.clear();
+      lcd1.print("ULTIMATE !!!");
+      Ultimate();
       P1HasUlted = true;
       }
+      } else {
+        lcd1.clear();
+        lcd1.print("Fehlgesschlagen");
       }
       break;
       case 4:
@@ -534,17 +631,31 @@ void Game()
       break;
     }
   }
+  }
+
+  if (digitalRead(SW2) == HIGH && PlayerAtTurn == 2){
+    SW2Pressed = false;
+    delay(50);
+  }
 
   if (digitalRead(SW2) == LOW && PlayerAtTurn == 2) {
+    if(SW2Pressed == false) {
+      SW2Pressed = true;
     switch(MoveIndex) {
       case 1:
       if(P2HasBlocked == false){
       if(Players[1].energy >= 1) {
+      blockmove = 0.2;
       lcd1.clear();
       lcd1.print("P2 blockt");
         Players[1].energy -= 1;
       P2HasBlocked = true;
+      lcd2.clear();
+      lcd2.print("Du Blockst");
       }
+      } else {
+      lcd2.clear();
+      lcd2.print("Fehlgeschlagen");
       }
       break;
       case 2:
@@ -554,18 +665,29 @@ void Game()
       lcd1.clear();
       lcd1.print("P2 attackiert");
         Players[1].energy -= 2;
+      lcd2.clear();
+      lcd2.print("Angriff !");
+      BlockingGame();
       P2HasAttacked = true;
       }
+      } else {
+        lcd2.clear();
+        lcd2.print("Fehlgeschlagen");
       }
       break;
       case 3:
       if(P2HasUlted == false){
       if(Players[1].energy >= Players[1].ability_energy_cost) {
       lcd1.clear();
-      lcd1.print("P2 ulted");
         Players[1].energy -= Players[1].ability_energy_cost;
+      lcd2.clear();
+      lcd2.print("ULTIMATE !!!");
+      Ultimate();
       P2HasUlted = true;
       }
+      } else {
+      lcd2.clear();
+      lcd2.print("Fehlgeschlagen");
       }
       break;
       case 4:
@@ -587,6 +709,7 @@ void Game()
       break;
     }
   }
+}
 }
 
 void resetTurnFlags() {
@@ -644,5 +767,236 @@ void NeopixelIndex(int Index) {
   int invertedIndex = NUM_LEDS - Index;
   strip2.setPixelColor(invertedIndex, strip2.Color(0, 255, 0));
   strip2.show();
+  }
+}
+
+void BlockingGame() {
+  if(PlayerAtTurn == 1) {
+    double damageoff = 1;
+    strip2.clear();
+    strip2.setPixelColor(1, strip2.Color(0, 0, 255));
+    strip2.show();
+    delay(1000);
+  for(int i = 8; i >= 0; i--) {
+    strip2.setPixelColor(i, strip2.Color(0, 255, 0));
+    delay(500);
+    if(digitalRead(SW2) == 0) {
+      switch(i) {
+        case 1:
+        damageoff -= 0.2 + blockmove;
+        blockmove = 0.0;
+        strip2.clear();
+        break;
+        case 2: 
+        damageoff -= 0.1 + blockmove;
+        blockmove = 0.0;
+        strip2.clear();
+        break;
+        default:
+        damageoff -= 0.0 + blockmove;
+        blockmove = 0.0;
+        strip2.clear();
+        break;
+      }
+      break;
+    }
+    strip2.show();
+  }
+  Players[1].healthpoints -= Players[0].damage * p1Advantage * damageoff;
+  strip2.clear();
+  strip2.show();
+  lcd2.clear();
+  lcd2.print("Attacke fertig !");
+  lcd1.clear();
+  lcd1.print("Attacke ");
+  lcd1.setCursor(0, 1);
+  lcd1.print("erfolgreich !");
+  }
+    if(PlayerAtTurn == 2) {
+    double damageoff = 1;
+    strip1.clear();
+    strip1.setPixelColor(1, strip1.Color(0, 0, 255));
+    strip1.show();
+    delay(1000);
+  for(int i = 8; i >= 0; i--) {
+    strip1.setPixelColor(i, strip1.Color(0, 255, 0));
+    delay(500);
+    if(digitalRead(SW1) == 0) {
+      switch(i) {
+        case 1:
+        damageoff -= 0.2 + blockmove;
+        blockmove = 0.0;
+        strip1.clear();
+        break;
+        case 2: 
+        damageoff -= 0.1 + blockmove;
+        blockmove = 0.0;
+        strip1.clear();
+        break;
+        default:
+        damageoff -= 0.0 + blockmove;
+        blockmove = 0.0;
+        strip1.clear();
+        break;
+      }
+      break;
+    }
+    strip1.show();
+  }
+  if(p1UltBlock == false){
+    Players[0].healthpoints -= Players[1].damage * p2Advantage * damageoff;
+    strip1.clear();
+    strip1.show();
+    lcd1.clear();
+    lcd1.print("Attacke fertig !");
+    lcd2.clear();
+    lcd2.print("Attacke");
+    lcd2.setCursor(0, 1);
+    lcd2.print("erfolgreich !");
+  }
+    if(p1UltBlock == true){
+    strip1.clear();
+    strip1.show();
+    lcd1.clear();
+    lcd1.print("Attacke geblockt");
+    lcd2.clear();
+    lcd2.print("Attacke");
+    lcd2.setCursor(0, 1);
+    lcd2.print("war misserfolg !");
+    p1UltBlock = false;
+  }
+  }
+}
+
+void SetRelations() {
+  if(Players[0].type == "grass"){
+    if(Players[1].type == "electric"){
+      p1Advantage = 1.2;
+      p2Advantage = 0.8;
+  }
+  }
+    if(Players[0].type == "electric"){
+    if(Players[1].type == "water"){
+      p1Advantage = 1.2;
+      p2Advantage = 0.8;
+  }
+  }
+    if(Players[0].type == "water"){
+    if(Players[1].type == "fire"){
+      p1Advantage = 1.2;
+      p2Advantage = 0.8;
+  }
+  }
+    if(Players[0].type == "fire"){
+    if(Players[1].type == "grass"){
+      p1Advantage = 1.2;
+      p2Advantage = 0.8;
+  }
+
+  }
+    if(Players[1].type == "grass"){
+    if(Players[0].type == "electric"){
+      p2Advantage = 1.2;
+      p1Advantage = 0.8;
+  }
+  }
+    if(Players[1].type == "electric"){
+    if(Players[0].type == "water"){
+      p2Advantage = 1.2;
+      p1Advantage = 0.8;
+  }
+  }
+    if(Players[1].type == "water"){
+    if(Players[0].type == "fire"){
+      p2Advantage = 1.2;
+      p1Advantage = 0.8;
+  }
+  }
+    if(Players[1].type == "fire"){
+    if(Players[0].type == "grass"){
+      p2Advantage = 1.2;
+      p1Advantage = 0.8;
+  }
+  }
+}
+
+void SetUltType() {
+  for(int i = 0; i<2; i++) 
+  {
+    if(Players[i].type == "grass")
+    {
+      ultimates[i] = 1;
+    }
+        if(Players[i].type == "electric")
+    {
+      ultimates[i] = 2;
+    }
+        if(Players[i].type == "water")
+    {
+      ultimates[i] = 3;
+    }
+        if(Players[i].type == "fire")
+    {
+      ultimates[i] = 4;
+    }
+  }
+}
+
+void Ultimate() {
+  if(PlayerAtTurn == 1)
+  {
+    switch(ultimates[0]) {
+      lcd2.clear();
+      case 1: 
+      Players[0].healthpoints += Players[0].ability_energy_cost * 20;
+      lcd2.print("Player 1");
+      lcd2.setCursor(0, 1);
+      lcd2.print("Hat sich geheilt");
+      break;
+      case 2:
+      p2stunned = true;
+      lcd2.print("Player 1");
+      lcd2.setCursor(0, 1);
+      lcd2.print("schockt dich");
+      break;
+      case 3:
+      p1UltBlock = true;
+      lcd2.print("Player 1");
+      lcd2.setCursor(0, 1);
+      lcd2.print("blockt alles");
+      case 4:
+      Players[1].healthpoints -= Players[0].ability_energy_cost * 20;
+      lcd2.print("Player 1");
+      lcd2.setCursor(0, 1);
+      lcd2.print("verbrennt dich");
+    }
+  }
+  if(PlayerAtTurn == 2)
+  {
+    lcd1.clear();
+    switch(ultimates[1]) {
+      case 1: 
+      Players[1].healthpoints += Players[1].ability_energy_cost * 20;
+      lcd1.print("Player 2");
+      lcd1.setCursor(0, 1);
+      lcd1.print("Hat sich geheilt");
+      break;
+      case 2:
+      p2stunned = true;
+      lcd1.print("Player 2");
+      lcd1.setCursor(0, 1);
+      lcd1.print("schockt dich");
+      break;
+      case 3:
+      p1UltBlock = true;
+      lcd1.print("Player 2");
+      lcd1.setCursor(0, 1);
+      lcd1.print("blockt alles");
+      case 4:
+      Players[0].healthpoints -= Players[1].ability_energy_cost * 20;
+      lcd1.print("Player 2");
+      lcd1.setCursor(0, 1);
+      lcd1.print("verbrennt dich");
+    }
   }
 }

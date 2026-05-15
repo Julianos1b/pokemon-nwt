@@ -6,28 +6,26 @@ public:
     const char* attackname;
     const char* name;
     const char* ultimatename;
-    const char* ultimatetype;
     int ability_energy_cost;
     const char* type;
 
     Pokemon(int hp,
+            int dm,
             int en,
-            const char* name,
-            const char* type,
-            int damage,
-            const char* attackname,
-            const char* ultimatename,
-            const char* ultimatetype,
-            int energy)
+            const char* at,
+            const char* na,
+            const char* ul,
+            int ab,
+            const char* ty
+            )
     {
-        this->energy = en;
         this->healthpoints = hp;
-        this->name = name;
-        this->type = type;
-        this->damage = damage;
-        this->attackname = attackname;
-        this->ultimatename = ultimatename;
-        this->ultimatetype = ultimatetype;
-        this->ability_energy_cost = energy;
+        this->damage = dm;
+        this->energy = en;
+        this->attackname = at;
+        this->name = na;
+        this->ultimatename = ul;
+        this->ability_energy_cost = ab;
+        this->type = ty;
     }
 };

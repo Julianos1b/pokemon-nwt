@@ -3,7 +3,7 @@
   "author": "Anonymous maker",
   "editor": "wokwi",
   "parts": [
-    { "type": "wokwi-arduino-mega", "id": "mega", "top": -76.2, "left": -195.6, "attrs": {} },
+    { "type": "wokwi-arduino-mega", "id": "mega", "top": -76.2, "left": -90, "attrs": {} },
     {
       "type": "wokwi-analog-joystick",
       "id": "joystick1",
@@ -33,13 +33,29 @@
       "top": 188.8,
       "left": 15.2,
       "attrs": { "pins": "i2c", "i2c-address": "0x26" }
+    },
+    {
+      "type": "wokwi-led-strip",
+      "id": "strip1",
+      "top": -11.9,
+      "left": -454.8,
+      "rotate": 270,
+      "attrs": { "pixels": "8", "pixelShape": "square" }
+    },
+    {
+      "type": "wokwi-led-strip",
+      "id": "strip2",
+      "top": -11.9,
+      "left": 226.8,
+      "rotate": 270,
+      "attrs": { "pixels": "8", "pixelShape": "square" }
     }
   ],
   "connections": [
     [ "joystick2:GND", "mega:GND.2", "black", [ "v0" ] ],
     [ "joystick1:GND", "mega:GND.2", "black", [ "v0" ] ],
-    [ "joystick1:SEL", "mega:8", "green", [ "v0" ] ],
-    [ "joystick2:SEL", "mega:12", "green", [ "v0" ] ],
+    [ "joystick1:SEL", "mega:8", "green", [ "v-297.6", "h547.8" ] ],
+    [ "joystick2:SEL", "mega:12", "green", [ "h38.4", "v-307.2", "h-374.4" ] ],
     [ "joystick1:HORZ", "mega:A2", "green", [ "v0" ] ],
     [ "joystick1:VERT", "mega:A3", "green", [ "v0" ] ],
     [ "joystick1:VCC", "mega:5V", "red", [ "v0" ] ],
@@ -47,13 +63,19 @@
     [ "joystick2:VERT", "mega:A1", "green", [ "v0" ] ],
     [ "joystick2:VCC", "mega:5V", "red", [ "v0" ] ],
     [ "lcd2:GND", "mega:GND.2", "black", [ "h67.2", "v-115.2" ] ],
-    [ "lcd2:VCC", "mega:5V", "red", [ "h0" ] ],
-    [ "lcd2:SDA", "mega:20", "green", [ "h0" ] ],
-    [ "lcd2:SCL", "mega:21", "green", [ "h0" ] ],
-    [ "lcd1:SDA", "mega:20", "green", [ "h0" ] ],
-    [ "lcd1:SCL", "mega:21", "green", [ "h0" ] ],
-    [ "lcd1:VCC", "mega:5V", "red", [ "h0" ] ],
-    [ "lcd1:GND", "mega:GND.2", "black", [ "h0" ] ]
+    [ "lcd2:VCC", "mega:5V", "red", [ "h-9.6", "v-122" ] ],
+    [ "lcd2:SDA", "mega:20", "green", [ "v-86.2", "h218.8" ] ],
+    [ "lcd2:SCL", "mega:21", "green", [ "v-86.1", "h228.3" ] ],
+    [ "lcd1:SDA", "mega:20", "green", [ "v-76.6", "h593.2" ] ],
+    [ "lcd1:SCL", "mega:21", "green", [ "v-86.1", "h602.7" ] ],
+    [ "lcd1:VCC", "mega:5V", "red", [ "v-67.1", "h429.7" ] ],
+    [ "lcd1:GND", "mega:GND.2", "black", [ "v-57.6", "h439.45" ] ],
+    [ "strip2:VDD", "mega:5V", "green", [ "v0" ] ],
+    [ "strip1:VDD", "mega:5V", "green", [ "v0" ] ],
+    [ "strip1:DIN", "mega:3", "green", [ "h47.6", "v-192" ] ],
+    [ "strip2:DIN", "mega:4", "green", [ "h57.2", "v-230.4", "h-255" ] ],
+    [ "strip2:VSS", "mega:GND.3", "green", [ "v0" ] ],
+    [ "strip1:VSS", "mega:GND.2", "green", [ "v0" ] ]
   ],
   "dependencies": {}
 }

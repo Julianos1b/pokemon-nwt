@@ -335,7 +335,6 @@ void WerteSetzen() {
   }
 
   SetRelations();
-  SetUltType();
   Gamestate = SPIEL;
 }
 
@@ -807,6 +806,9 @@ void BlockingGame() {
   strip2.show();
   lcd2.clear();
   lcd2.print("Attacke fertig !");
+  lcd2.setCursor(0, 1);
+  lcd2.print("Schaden : ");
+  lcd2.print(Players[0].damage * p1Advantage * damageoff);
   lcd1.clear();
   lcd1.print("Attacke ");
   lcd1.setCursor(0, 1);
@@ -849,6 +851,9 @@ void BlockingGame() {
     strip1.show();
     lcd1.clear();
     lcd1.print("Attacke fertig !");
+    lcd1.setCursor(0, 1);
+    lcd1.print("Schaden : ");
+    lcd1.print(Players[1].damage * p2Advantage * damageoff);
     lcd2.clear();
     lcd2.print("Attacke");
     lcd2.setCursor(0, 1);
@@ -920,51 +925,33 @@ void SetRelations() {
   }
 }
 
-void SetUltType() {
-  for(int i = 0; i<2; i++) 
-  {
-    if(Players[i].type == "grass")
-    {
-      ultimates[i] = 1;
-    }
-        if(Players[i].type == "electric")
-    {
-      ultimates[i] = 2;
-    }
-        if(Players[i].type == "water")
-    {
-      ultimates[i] = 3;
-    }
-        if(Players[i].type == "fire")
-    {
-      ultimates[i] = 4;
-    }
-  }
-}
-
 void Ultimate() {
   if(PlayerAtTurn == 1)
   {
-    switch(ultimates[0]) {
-      lcd2.clear();
-      case 1: 
+    lcd2.clear();
+    if(Players[0].type == "grass")
+    {
       Players[0].healthpoints += Players[0].ability_energy_cost * 20;
       lcd2.print("Player 1");
       lcd2.setCursor(0, 1);
       lcd2.print("Hat sich geheilt");
-      break;
-      case 2:
+    }
+    if(Players[0].type == "electric")
+    {
       p2stunned = true;
       lcd2.print("Player 1");
       lcd2.setCursor(0, 1);
       lcd2.print("schockt dich");
-      break;
-      case 3:
+    }
+    if(Players[0].type == "water")
+    {
       p1UltBlock = true;
       lcd2.print("Player 1");
       lcd2.setCursor(0, 1);
       lcd2.print("blockt alles");
-      case 4:
+    }
+      if(Players[0].type == "fire")
+    {
       Players[1].healthpoints -= Players[0].ability_energy_cost * 20;
       lcd2.print("Player 1");
       lcd2.setCursor(0, 1);
@@ -974,25 +961,29 @@ void Ultimate() {
   if(PlayerAtTurn == 2)
   {
     lcd1.clear();
-    switch(ultimates[1]) {
-      case 1: 
+    if(Players[1].type == "grass") 
+    {
       Players[1].healthpoints += Players[1].ability_energy_cost * 20;
       lcd1.print("Player 2");
       lcd1.setCursor(0, 1);
       lcd1.print("Hat sich geheilt");
-      break;
-      case 2:
+    }
+    if(Players[1].type == "electric") 
+    {
       p2stunned = true;
       lcd1.print("Player 2");
       lcd1.setCursor(0, 1);
       lcd1.print("schockt dich");
-      break;
-      case 3:
+    }
+    if(Players[1].type == "water") 
+    {
       p1UltBlock = true;
       lcd1.print("Player 2");
       lcd1.setCursor(0, 1);
       lcd1.print("blockt alles");
-      case 4:
+    }
+    if(Players[1].type == "fire") 
+    {
       Players[0].healthpoints -= Players[1].ability_energy_cost * 20;
       lcd1.print("Player 2");
       lcd1.setCursor(0, 1);

@@ -3,20 +3,20 @@ public:
     int healthpoints;
     int damage;
     int energy;
-    const char* attackname;
-    const char* name;
-    const char* ultimatename;
+    String attackname;
+    String name;
+    String ultimatename;
     int ability_energy_cost;
-    const char* type;
+    String type;
 
     Pokemon(int hp,
             int dm,
             int en,
-            const char* at,
-            const char* na,
-            const char* ul,
+            String at,
+            String na,
+            String ul,
             int ab,
-            const char* ty
+            String ty
             )
     {
         this->healthpoints = hp;
